@@ -10,11 +10,11 @@ When we accessed the URL we were presented with "*My .webcam DNS*" web panel tha
 
 ![alt text](images/panel.png "My .webcam DNS panel")
 
-What surprised us most this really worked! Participants could create their own subdomains leading to whatever IP that were later really visible in the DNS system.
+What surprised us most is that it really worked! Participants could create their own subdomains leading to whatever IP that were later really visible in the DNS system.
 
 However since this wasn't web task and panel had captchas we didn't even bother checking it more.
 
-We decided to find authoritative namveservers for mydns.webcam and check it for zone transfer. It worked!
+We decided to find authoritative nameservers for mydns.webcam and check it for zone transfer. It worked!
 
 ```bash
 $ dig +trace +short NS mydns.webcam
@@ -51,15 +51,15 @@ affect.mydns.webcam.    300 IN  A   34.231.38.24
 ...
 ```
 
-Some problem was that this zone also consisted of the records added by participants.
+Some problem was that this zone also contained records added by participants.
 
-We decided to get all A records leading to 34.231.38.24 (most frequent IP and also IP of mydns.webcam) and query this IP for each subdomain (as a vhost).
+We decided to filter all A records pointing to 34.231.38.24 (most frequent IP and also IP of mydns.webcam) and query this IP with each subdomain (as a vhost).
 
 ```bash
 $ cat subdomains.txt | while read subdom; do curl -k -H "Host: ${subdom}" https://34.231.38.24/ > output/${subdom.html}; done
 ```
 
-We noticed we received only three different versions of output pages:
+As a result we received only three different versions of output pages:
 
 ```bash
 $ md5sum output/* | cut -d' ' -f 1 | sort | uniq -c 
